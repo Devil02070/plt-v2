@@ -1,0 +1,75 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// -----------------------------------------------------------------
+// Sort Address
+// -----------------------------------------------------------------
+export function ShortAddress(address:string){
+  const output = address.slice(0,4) + '...' + address.slice(-4)
+  return output;
+}
+
+// -----------------------------------------------------------------
+// Sort exponential Numbers
+// -----------------------------------------------------------------
+const subscripts: Record<string, string> = {
+  "0": "₀", "1": "₁", "2": "₂", "3": "₃",
+  "4": "₄", "5": "₅", "6": "₆", "7": "₇",
+  "8": "₈", "9": "₉"
+};
+function toSubscript(n: number) {
+  return n.toString().split("").map(d => subscripts[d] ?? "").join("");
+}
+export function formatTinyEth(raw: number) {
+  if (!raw || raw === 0) return "0";
+  // FORCE normal notation (avoid 3e-7)
+  const str = raw.toFixed(18); // gives "0.000000340000000000"
+  // Match: decimal zeros + significant digits
+  const match = str.match(/^0\.(0*)([1-9]\d*)/);
+
+  if (!match) return raw.toString();
+
+  const leadingZeros = match[1].length;        // count zeros (6)
+  const significant = match[2].slice(0, 3);    // take first 3 digits
+
+  return `0.0${toSubscript(leadingZeros)}${significant}`;
+}
+
+// -----------------------------------------------------------------
+// handle Number Inputs
+// -----------------------------------------------------------------
+export const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  // const { value, selectionStart, id } = e.currentTarget;
+  const { value } = e.currentTarget;
+  const key = e.key;
+
+  // Allow navigation and deletion keys
+  const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight"];
+  if (allowedKeys.includes(key)) return;
+
+  // Block non-numeric and non-dot characters
+  if (!/[\d.]/.test(key)) {
+    e.preventDefault();
+    return;
+  }
+
+  // Prevent multiple dots
+  if (key === "." && value.includes(".")) {
+    e.preventDefault();
+    return;
+  }
+
+  // Prevent more than 6 digits after the decimal
+  // const dotIndex = value.indexOf(".");
+  // if (dotIndex !== -1 && selectionStart !== null && selectionStart > dotIndex) {
+  //     const decimals = value.slice(dotIndex + 1);
+  //     if ((id === "x" && decimals.length >= xToken.decimals) || ((id === "y" && decimals.length >= yToken.decimals))) {
+  //         e.preventDefault();
+  //         return;
+  //     }
+  // }
+};
