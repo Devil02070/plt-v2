@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center font-onest font-medium justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center cursor-pointer font-onest font-medium justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -13,7 +13,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "border border-black-15 bg-black-5 text-foreground",
+          "border border-black-15 bg-black-5 text-foreground transition-all hover:translate-[1px_0px]",
         secondary:
           "bg-foreground text-background border-[1.25px] border-white-25 sec-btn-shadow",
         ghost:
@@ -22,7 +22,7 @@ const buttonVariants = cva(
       },
       size: {
         // default: "h-10 px-5 py-3.25 has-[>svg]:px-3",
-        default: "h-10 px-5 py-3.25 text-sm",
+        default: "h-10 px-4 md:px-5 py-3.25 text-sm rounded-md",
         sm: "h-7 py-2 px-3.5 text-xs",
         lg: "h-10 px-6 has-[>svg]:px-4",
         icon: "size-6.5 p-1.25 w-fit",

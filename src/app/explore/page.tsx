@@ -1,6 +1,6 @@
 import Body from "./components";
 
-export default function Game() {
+export default function ExplorePage() {
     return (
         <main>
             <Body />

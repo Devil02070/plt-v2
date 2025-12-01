@@ -1,5 +1,9 @@
+import Body from "./components";
+
 export default function StakePage(){
     return(
-        <h1>stake</h1>
+        <main>
+            <Body/>
+        </main>
     )
 }

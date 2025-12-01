@@ -5,6 +5,7 @@ import { Onest } from "@/lib/fonts";
 import { AppKitProvider } from "@/providers/AppkitProvider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,10 +21,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${Onest.variable} antialiased`} >
         <AppKitProvider>
-          <Header/>
-          <main className="w-full max-w-7xl mx-auto px-6">
-          {children}
+          <Header />
+          {/* <main className="w-full max-w-[1440px] mx-auto px-6"> */}
+          <main className="w-full mx-auto">
+            {children}
           </main>
+          <Toaster/>
           <Footer />
         </AppKitProvider>
       </body>

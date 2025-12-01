@@ -30,8 +30,8 @@ const Typography = forwardRef<TypographyElement, TypographyProps>(
         }
 
         const variants: Record<TypographyTag, string> = {
-            h1: "text-[22px]  lg:text-[28px] leading-[22px] lg:leading-[28px] font-onest font-bold",
-            h2: "text-[18px]  lg:text-[24px] leading-[18px] lg:leading-[24px] font-onest",
+            h1: "text-[16px]  2xl:text-[18px] leading-[16px] 2xl:leading-[18px] font-onest",
+            h2: "text-[12px]  md:text-[14px]  lg:text-[16px] leading:[12px] md:leading-[14px] 2xl:leading-[16px] font-onest",
             h3: "text-[14px]  lg:text-[20px] leading-[14px] lg:leading-[20px] font-onest",
 
             p18: "text-[16px] md:text-[18px] leading-[18px] font-onest",

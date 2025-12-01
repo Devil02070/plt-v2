@@ -23,11 +23,4 @@ export const navitems = [
         icon: BiCoinStack,
         hideMobile: false,
     },
-    {
-        title: "About",
-        url: '/about',
-        icon: FiBox,
-        hideMobile: true,
-    },
-
 ]
