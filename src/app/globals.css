@@ -70,6 +70,7 @@
   --color-primary-80: var(--primary-80);
   --color-primary-90: var(--primary-90);
 
+  --color-success: var(--success);
   --color-danger: var(--danger);
 }
 
@@ -129,13 +130,14 @@
   --black-90: #000000;
 
   --primary-5: #6e54ff0d;
-  --primary-10: #6e54ff;
+  --primary-10: #6E54FF1A;
   --primary-15: #6e54ff26;
   --primary-25: #6e54ff;
   --primary-60: #6e54ff;
   --primary-80: #6e54ff;
-  --primary-90: #6e54ff;
+  --primary-90: #6E54FFE5;
 
+  --success:#227A0A;
   --danger: #c62d20;
 }
 

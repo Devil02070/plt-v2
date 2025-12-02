@@ -5,7 +5,9 @@ import { ShortAddress } from "@/lib/utils";
 import Image from "next/image";
 import dayjs from "dayjs"
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { Button } from "@/components/ui/button";
 dayjs.extend(relativeTime)
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 export default function MiningTable() {
     const tableHeadings = ['Round', 'Box', 'Token Winner', 'Winners', 'Deposit', 'Vaulted', 'Winnings', 'Powerhouse', 'Time']
@@ -78,6 +80,11 @@ export default function MiningTable() {
                         }
                     </TableBody>
                 </Table>
+            </div>
+            <div className="w-fit mx-auto flex items-center gap-6 mt-6">
+                <Button variant="outline" size="sm" className="px-2 rounded-md"><IoIosArrowBack /></Button>
+                <P14 className="font-medium text-[#979797]">Page 1/5</P14>
+                <Button variant="outline" size="sm" className="px-2 rounded-md"><IoIosArrowForward size={16} /></Button>
             </div>
         </div>
     )

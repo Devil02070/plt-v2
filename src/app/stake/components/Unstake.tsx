@@ -1,12 +1,15 @@
 'use client'
+import WalletButton from "@/components/header/WalletButton";
 import { P12, P14 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { handleKeyPress } from "@/lib/utils";
+import { useAppKitAccount } from "@reown/appkit/react";
 import Image from "next/image";
 import { useState } from "react";
 import { HiOutlineWallet } from "react-icons/hi2";
 
 export default function Unstake() {
+    const { isConnected } = useAppKitAccount()
     const [amount, setAmount] = useState('')
     return (
         <>
@@ -61,8 +64,13 @@ export default function Unstake() {
                     />
                     <Button size="sm" variant="secondary" className="rounded-md cursor-pointer p-2 w-fit">Max</Button>
                 </div>
-                <div className="text-center">
-                    <Button className="mt-3">Withdraw</Button>
+                <div className="text-center mt-3">
+                    {
+                        isConnected ?
+                            <Button className="mt-3">Withdraw</Button>
+                            :
+                            <WalletButton />
+                    }
                 </div>
             </div>
         </>

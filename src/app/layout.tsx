@@ -18,15 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${Onest.variable} antialiased`} >
         <AppKitProvider>
           <Header />
           {/* <main className="w-full max-w-[1440px] mx-auto px-6"> */}
-          <main className="w-full mx-auto">
+          <main className="w-full mx-auto pb-16 md:pb-0">
             {children}
           </main>
-          <Toaster/>
+          <Toaster position="bottom-left" duration={5000000}/>
           <Footer />
         </AppKitProvider>
       </body>

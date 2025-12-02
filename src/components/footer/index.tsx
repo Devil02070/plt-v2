@@ -7,7 +7,7 @@ import { LiaTelegramPlane } from "react-icons/lia";
 
 export default function Footer() {
     return (
-        <div className="bg-background md:fixed bottom-0 w-full">
+        <div className="hidden md:block bg-background md:fixed bottom-0 w-full">
             <footer className="border-t border-primary bg-primary-5 pb-16 sm:pb-0 ">
                 <div className="w-full mx-auto py-2 px-4 md:px-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">

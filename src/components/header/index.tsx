@@ -35,8 +35,7 @@ export default function Header() {
                         </nav>
                     </div>
                     <div className="flex items-center gap-2 md:gap-4">
-                        {/* <Button className="border-primary hidden md:flex">Buy PLT</Button> */}
-                        <Button>Buy <span className="hidden md:block">PLT</span></Button>
+                        <Button>Buy</Button>
                         <WalletButton />
                     </div>
                     <MobileMenu />

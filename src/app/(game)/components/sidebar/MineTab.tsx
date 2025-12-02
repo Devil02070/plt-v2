@@ -6,16 +6,82 @@ import Image from "next/image";
 import { MdOutlineWallet } from "react-icons/md";
 import { LuInfo } from "react-icons/lu";
 import { RiTwitterXFill } from "react-icons/ri";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useAppKitAccount } from "@reown/appkit/react";
+import WalletButton from "@/components/header/WalletButton";
+import { Spinner } from "@/components/ui/spinner";
+import useBalance from "@/hooks/useBalance";
+import { ethers } from "ethers";
+import useContract from "@/hooks/useContract";
 
 interface MineProps {
     amount: string;
     setAmount: Dispatch<SetStateAction<string>>
     handleDeposit: () => void
-    timer:number;
-    selectedIndexes:number[]
+    timer: number;
+    selectedIndexes: number[];
+    isDepositing: boolean
 }
-export default function MineTab({ amount, setAmount, handleDeposit, timer, selectedIndexes }: MineProps) {
+export default function MineTab({ amount, setAmount, handleDeposit, timer, selectedIndexes, isDepositing }: MineProps) {
+    const { isConnected } = useAppKitAccount()
+    const { balance } = useBalance()
+
+    const { address } = useAppKitAccount()
+    const { readContract } = useContract();
+    const [totalDeposit, setTotalDeposit] = useState(0)
+    const [userDeposit, setUserDeposit] = useState(0)
+    const [powerhouse, setPowerhouse] = useState(0)
+
+    const getPowerhouseBalance = async () => {
+        try {
+            const amount = await readContract.powerHouseTokenBalance();
+            const formatted = amount
+                ? ethers.utils.formatEther(amount)
+                : "0";
+            setPowerhouse(Number(formatted))
+        } catch (err) {
+            console.log("view error", err);
+        }
+    }
+
+    const getTotalUserDeposit = async () => {
+        if (!address) return;
+        try {
+            const amount = await readContract.totalUserStake(address);
+            // console.log('userDeposit', amount)
+            const formatted = amount
+                ? ethers.utils.formatEther(amount)
+                : "0";
+            setUserDeposit(Number(formatted))
+        } catch (err) {
+            console.log("view error", err);
+        }
+    }
+
+    // const getTotalRoundDeposit = async () => {
+    //     try {
+    //         const amount = await readContract.allOverStakeAmount();
+    //         // console.log('OverALL Round Deposit', amount)
+    //         const formatted = amount
+    //             ? ethers.utils.formatEther(amount)
+    //             : "0";
+    //         setTotalDeposit(Number(formatted))
+    //     } catch (err) {
+    //         console.log("overall error", err);
+    //     }
+    // }
+
+    useEffect(() => {
+        const fetchAll = () => {
+            getPowerhouseBalance();
+            // getTotalRoundDeposit();
+            if (address) getTotalUserDeposit();
+        };
+
+        fetchAll();
+        // const interval = setInterval(fetchAll, 10000);
+        // return () => clearInterval(interval);
+    }, [address]);
     return (
         <div className="flex flex-col justify-between">
             <div className="px-4 lg:px-8 pt-4 md:pt-8 pb-10">
@@ -25,7 +91,7 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
                             <P12 className="text-black-60">PowerHouse</P12>
                             <div className="flex items-center justify-center gap-1">
                                 <Image src="/media/Logo.svg" alt="plt" height={16} width={16} />
-                                <P14 className="font-semibold">67.3</P14>
+                                <P14 className="font-semibold">{powerhouse}</P14>
                             </div>
                         </div>
                         <div className="p-1.25 pb-3 text-center space-y-2">
@@ -39,21 +105,21 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
                             <P12 className="text-black-60">Total Deposit</P12>
                             <div className="flex items-center justify-center gap-1">
                                 <Image src="/media/monad-logo.svg" alt="plt" height={16} width={16} />
-                                <P14 className="font-semibold">67.3</P14>
+                                <P14 className="font-semibold">{totalDeposit}</P14>
                             </div>
                         </div>
                         <div className="p-1.25 pt-3 text-center space-y-2">
                             <P12 className="text-black-60">Your Deposit</P12>
                             <div className="flex items-center justify-center gap-1">
                                 <Image src="/media/monad-logo.svg" alt="plt" height={16} width={16} />
-                                <P14 className="font-semibold">67.3</P14>
+                                <P14 className="font-semibold">{userDeposit}</P14>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="deposit mt-6">
                     <div className="grid grid-cols-5 gap-4">
-                        {["50", "100", "500", "1000", '5000'].map((val) => (
+                        {["0.01", "100", "500", "1000", '5000'].map((val) => (
                             <Button
                                 key={val}
                                 variant="outline"
@@ -78,32 +144,35 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
                             />
                             <div className="flex items-center gap-1">
                                 <MdOutlineWallet size={28} />
-                                {/* <P14 className="font-semibold">{balance.toFixed(2)}</P14> */}
-                                <P14 className="font-medium">{230.02}</P14>
+                                <P14 className="font-medium">{balance.toFixed(3)}</P14>
                                 <Image src="/media/monad-logo.svg" alt="logo" height={12} width={12} className="rounded-full" />
                             </div>
                         </div>
 
-                        <Button
-                            onClick={() => handleDeposit()}
-                            // disabled={!amount || selectedIndexes.length === 0 || timer === 0}
-                            disabled={!amount || selectedIndexes.length === 0}
-                            className="z-50"
-                            variant="secondary"
-                        >
-                            {/* {isDepositing ? <Spinner /> : 'Deposit'} */}
-                            Deposit
-                        </Button>
+
+                        {
+                            isConnected ?
+                                <Button
+                                    onClick={() => handleDeposit()}
+                                    disabled={!amount || selectedIndexes.length === 0 || timer === 0}
+                                    className="z-50"
+                                    variant="secondary"
+                                >
+                                    {isDepositing ? <Spinner /> : 'Deposit'}
+                                </Button>
+                                :
+                                <WalletButton />
+                        }
                     </div>
                     <div className="bg-black-5 rounded-[12px] p-3 space-y-4 mt-6">
                         <div className="flex items-center justify-between gap-2">
                             <P12 className="text-black-60">Block</P12>
-                            <P14 className="font-semibold">x0</P14>
+                            <P14 className="font-semibold">x{selectedIndexes.length}</P14>
                         </div>
                         <div className="flex items-center justify-between gap-2">
                             <P12 className="text-black-60">Total Deposit</P12>
                             <div className="flex items-center justify-end gap-1">
-                                <P14 className="font-semibold">67.3</P14>
+                                <P14 className="font-semibold">{selectedIndexes.length * Number(amount)}</P14>
                                 <Image src="/media/monad-logo.svg" alt="plt" height={16} width={16} />
                             </div>
                         </div>
