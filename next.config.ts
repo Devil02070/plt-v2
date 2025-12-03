@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     PUBLIC_RPC: process.env.PUBLIC_RPC,
     BACKEND_URL: process.env.BACKEND_URL,
     SOCKET_SERVER: process.env.SOCKET_SERVER,
+    COOKIE_TOKEN: process.env.COOKIE_TOKEN,
   }
 };
 

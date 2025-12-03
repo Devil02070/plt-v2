@@ -17,14 +17,16 @@ export default function BuyBackTable() {
             <div className="mt-6 relative overflow-y-auto">
                 <Table className="w-full">
                     <TableHeader>
-                        {
-                            tableHeadings.map((item, i) => {
-                                const align = i === 0 ? 'text-start' : i === tableHeadings.length - 1 ? 'text-end' : 'text-center'
-                                return (
-                                    <TableHead key={i}><P12 className={`text-black-60 ${align}`}>{item}</P12></TableHead>
-                                )
-                            })
-                        }
+                        <TableRow>
+                            {
+                                tableHeadings.map((item, i) => {
+                                    const align = i === 0 ? 'text-start' : i === tableHeadings.length - 1 ? 'text-end' : 'text-center'
+                                    return (
+                                        <TableHead key={i}><P12 className={`text-black-60 ${align}`}>{item}</P12></TableHead>
+                                    )
+                                })
+                            }
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
                         {

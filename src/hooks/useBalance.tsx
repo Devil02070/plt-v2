@@ -12,7 +12,7 @@ export default function useBalance() {
         if (!address || !provider) return
         const balance = await provider.getBalance(address);
         const formattedValue = ethers.utils.formatEther(balance);
-        console.log(`${formattedValue} `);
+        // console.log(`${formattedValue} `);
         setBalance(Number(formattedValue))
     };
     useEffect(() => {

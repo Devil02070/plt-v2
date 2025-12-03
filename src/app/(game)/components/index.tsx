@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import useContract from "@/hooks/useContract";
 import { ethers } from "ethers";
 import { PublicRpc } from "@/utils/env";
+import { EventData } from "@/utils/types";
+import { socket } from "@/utils/socket-io-client";
 
 export default function Body() {
     const { readContract, getWriteContract } = useContract();
@@ -19,7 +21,7 @@ export default function Body() {
     const [users, setUsers] = useState<number[]>([])
     const [amounts, setAmounts] = useState<string[]>([])
 
-    const [timer, setTimer] = useState(30)
+    const [timer, setTimer] = useState(0)
     const [totalAmount, setTotalAmount] = useState(0)
     const [winningIndex, setWinningIndex] = useState<number | null>(null)
     const [isEnded, setIsEnded] = useState(false)
@@ -28,7 +30,7 @@ export default function Body() {
 
     const [endTimestamp, setEndTimestamp] = useState(0)
     const [currentTimestamp, setCurrentTimestamp] = useState(0)
-    // const [gameEndData, setGameEndData] = useState<EventData[]>([]);
+    const [gameEndData, setGameEndData] = useState<EventData[]>([]);
     const [gameStatus, setGameStatus] = useState(false)
 
     const toggleSelected = (index: number) => {
@@ -57,8 +59,8 @@ export default function Body() {
             const users = [...arr1].map(x => Number(x));
             const blockAmounts = [...arr2].map(x => String(x));
 
-            console.log('User Details 1', users)
-            console.log('Amounts Details 2', blockAmounts)
+            // console.log('User Details 1', users)
+            // console.log('Amounts Details 2', blockAmounts)
 
             setUsers(users)
             setAmounts(blockAmounts)
@@ -119,7 +121,7 @@ export default function Body() {
                 return;
             };
             const transaction = await writeContract.stake(selectedIndexes, amountsPerBox, {
-                value: splitAmount
+                value: totalValue
             });
             console.log('write response', transaction)
 
@@ -138,17 +140,92 @@ export default function Body() {
         }
     }
 
-    // useEffect(() => {
-    //     const users = Array.from({ length: 25 }, () => Math.floor(Math.random() * 500));
-    //     const amounts = Array.from({ length: 25 }, () =>
-    //         (Math.random() * 9000 + 100).toFixed(2)
-    //     );
-    //     setUsers(users)
-    //     setAmounts(amounts)
-    // }, [])
+    useEffect(() => {
+        setTotalAmount(selectedIndexes.length * Number(amount))
+    }, [amount, selectedIndexes])
+
+    // remaining time
+    useEffect(() => {
+        if (endTimestamp && currentTimestamp) {
+            const remaining_ts = Number(endTimestamp) - currentTimestamp;
+            console.log(Number(endTimestamp), currentTimestamp);
+            console.log('Remaining time:', remaining_ts);
+
+            if (remaining_ts > 0) {
+                setIsEnded(false);
+                setTimer(remaining_ts);
+            } else {
+                setIsEnded(true);
+                setTimer(0);
+            }
+        }
+    }, [endTimestamp, currentTimestamp]);
 
     useEffect(() => {
-        getRoundDetails()
+        if (timer > 0) {
+            const interval = setInterval(() => setTimer(t => t - 1), 1000);
+            return () => clearInterval(interval);
+        }
+    }, [timer]);
+
+    useEffect(() => {
+        if (timer === 0 && gameEndData && winningIndex === null) {
+            const winnerBlock = gameEndData[0]?.block;
+            console.log('winning Block', winnerBlock)
+            setWinningIndex(winnerBlock);
+            setIsEnded(true);
+
+            // show glow after fade
+            setTimeout(() => setShowWinner(true), 3000);
+
+            // reset grid after whole sequence
+            setTimeout(() => {
+                setWinningIndex(null);
+                setShowWinner(false);
+                setIsEnded(false);
+                setSelectedIndexes([])
+                setAmountBoxes(Array.from({ length: 25 }).map(() => 0))
+                setEndTimestamp(0)
+                setCurrentTimestamp(0)
+
+                setGameStatus(false);
+            }, 6000);
+        }
+    }, [gameEndData]);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout | undefined;
+
+        // Start polling ONLY when status is false (game not active)
+        if (gameStatus === false) {
+            interval = setInterval(() => {
+                getGameStatus();
+            }, 3000);
+        }
+
+        // If game becomes active → stop polling
+        if (gameStatus === true && interval) {
+            clearInterval(interval);
+            interval = undefined;
+        }
+
+        // Cleanup when component unmounts
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+
+    }, [gameStatus]);
+
+    useEffect(() => {
+        //get new game 
+        if (gameStatus === true) {
+            getCurrentTimestamp();
+            getEndTimestamp()
+            getCurrentRound()
+        }
+    }, [gameStatus])
+
+    useEffect(() => {
         getCurrentTimestamp()
         getEndTimestamp()
         getGameStatus()
@@ -156,56 +233,28 @@ export default function Body() {
     }, [])
 
     useEffect(() => {
+        getRoundDetails();
+        const interval = setInterval(() => {
+            getRoundDetails();
+        }, 5000)
+        return () => clearInterval(interval)
+    }, []);
+
+    useEffect(() => {
         console.log("Updated amountBoxes", amountBoxes)
     }, [amountBoxes])
 
     useEffect(() => {
-        setTotalAmount(selectedIndexes.length * Number(amount))
-    }, [amount, selectedIndexes])
-
-    // remaining time
-    useEffect(() => {
-        if (!endTimestamp) return;
-        const now = Math.floor(Date.now() / 1000);
-        const remain = endTimestamp - now;
-
-        if (remain > 0) {
-            setIsEnded(false);
-            setTimer(remain);
-        } else {
-            setIsEnded(true);
-            setTimer(0);
-        }
-    }, [endTimestamp]);
-
-    useEffect(() => {
-        if (timer > 0) {
-            const int = setInterval(() => setTimer(t => t - 1), 1000);
-            return () => clearInterval(int);
-        }
-
-        // when timer hits zero and no winner yet
-        if (timer === 0 && winningIndex === null) {
-            const random = Math.floor(Math.random() * 25);
-            setWinningIndex(random);
-            setIsEnded(true);
-
-            // reveal winner glow after fade animation
-            setTimeout(() => setShowWinner(true), 3000);
-
-            // reset everything after 8s
-            setTimeout(() => {
-                setWinningIndex(null);
-                setShowWinner(false);
-                setIsEnded(false);
-                setSelectedIndexes([]);
-                setAmountBoxes(Array.from({ length: 25 }).map(() => 0));
-                setTimer(30);
-                setEndTimestamp(Math.floor(Date.now() / 1000) + 30);
-            }, 8000);
-        }
-    }, [timer]);
-
+        // const gamehandler = (data: { data: EventData }) => {
+        const gamehandler = (data: EventData[]) => {
+            console.log('gameEndData', data[0]);
+            setGameEndData(data)
+        };
+        socket.on(`minted`, gamehandler);
+        return () => {
+            socket.off(`minted`, gamehandler);
+        };
+    }, []);
     return (
         <section className="mt-18 xl:mt-20 xl:h-[calc(100vh-122px)] overflow-hidden">
             <div className="flex flex-wrap md:flex-nowrap h-full">
@@ -240,7 +289,7 @@ export default function Body() {
                             />
                         </TabsContent>
                         <TabsContent value="last-round">
-                            <Winners />
+                            <Winners gameEndData={gameEndData} />
                         </TabsContent>
                     </Tabs>
                 </div>

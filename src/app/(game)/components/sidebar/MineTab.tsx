@@ -47,14 +47,14 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
     const getTotalUserDeposit = async () => {
         if (!address) return;
         try {
-            const amount = await readContract.totalUserStake(address);
-            // console.log('userDeposit', amount)
+            const amount = await readContract.totalUserStake(0, address);
             const formatted = amount
-                ? ethers.utils.formatEther(amount)
-                : "0";
+            ? ethers.utils.formatEther(amount)
+            : "0";
+            console.log('userDeposit', formatted)
             setUserDeposit(Number(formatted))
         } catch (err) {
-            console.log("view error", err);
+            console.log("user deposit", err);
         }
     }
 
@@ -79,8 +79,8 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
         };
 
         fetchAll();
-        // const interval = setInterval(fetchAll, 10000);
-        // return () => clearInterval(interval);
+        const interval = setInterval(fetchAll, 5000);
+        return () => clearInterval(interval);
     }, [address]);
     return (
         <div className="flex flex-col justify-between">
@@ -96,7 +96,11 @@ export default function MineTab({ amount, setAmount, handleDeposit, timer, selec
                         </div>
                         <div className="p-1.25 pb-3 text-center space-y-2">
                             <P12 className="text-black-60">Time Remaining</P12>
-                            <P14 className="font-semibold text-danger">00:{timer ? timer : 0}</P14>
+                            <P14 className="font-semibold text-danger">
+                                {
+                                    timer > 0 ? `00:${timer}` : 'waiting...'
+                                }
+                            </P14>
                         </div>
                     </div>
                     <div className="border-t border-black-15 w-1/2 mx-auto"></div>
