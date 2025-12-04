@@ -64,6 +64,9 @@ export default function WalletButton() {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        <Button onClick={() => open()} variant='secondary' className="cursor-pointer">
+                           test modal
+                        </Button>
                     </>
                     :
                     status === 'connecting' ?

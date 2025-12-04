@@ -56,6 +56,11 @@ export default function GridLayout({ selectedIndexes, setSelectedIndexes, toggle
                                         : { opacity: 0, scale: 0.8 }
                                     : { opacity: 1, scale: 1 }
                             }
+                            // animate={
+                            //     isEnded && isWinner
+                            //         ? { opacity: 0, scale: 0.8 }
+                            //         : { opacity: 1, scale: 1 }
+                            // }
                             transition={
                                 isEnded && !isWinner
                                     ? { duration: 2, delay: randomDelay }

@@ -41,7 +41,7 @@ export default function Winners({ gameEndData }: WinnersProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {
+                        {/* {
                             gameEndData[0].users.map((user, i) => {
                                 const isOneWinner = gameEndData[0].one_plt_winner ?? undefined
 
@@ -91,13 +91,13 @@ export default function Winners({ gameEndData }: WinnersProps) {
                                     </TableRow>
                                 )
                             })
-                        }
-                        {/* {
+                        } */}
+                        {
                             Array.from({ length: 30 }).map((_, i) => {
                                 return (
                                     <TableRow key={i}>
                                         <TableCell className="ps-0">
-                                            <P12 className="font-normal text-black-60 uppercase">{ShortAddress('oxerfdiofsdn3o4n343')}</P12>
+                                            <P12 className="font-normal text-black-60 uppercase">{'dummy'}</P12>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-1 px-2">
@@ -108,15 +108,15 @@ export default function Winners({ gameEndData }: WinnersProps) {
                                         <TableCell className="pe-0">
                                             <div className="flex items-center justify-end gap-1">
                                                 <Image src="/media/Logo.svg" alt="logo" height={16} width={16} />
-                                                <P12 className="font-medium">34.23 +</P12>
+                                                <P12 className="font-medium">- +</P12>
                                                 <Image src="/media/monad-logo.svg" alt="logo" height={16} width={16} />
-                                                <P12 className="font-medium">34.78</P12>
+                                                <P12 className="font-medium">-</P12>
                                             </div>
                                         </TableCell>
                                     </TableRow>
                                 )
                             })
-                        } */}
+                        }
                     </TableBody>
                 </Table>
             </div>
